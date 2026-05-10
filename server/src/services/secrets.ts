@@ -904,7 +904,7 @@ export function secretService(db: Db) {
     return { providerConfig, provider, runtimeConfig: toProviderVaultRuntimeConfig(providerConfig) };
   }
 
-  return {
+  const api = {
     listProviders: () => listSecretProviders(),
 
     checkProviders: () => checkSecretProviders(),
@@ -2039,6 +2039,30 @@ export function secretService(db: Db) {
       return refs;
     },
 
+    upsertSecretByName: async (
+      companyId: string,
+      input: { name: string; value: string },
+      actor?: { userId?: string | null; agentId?: string | null },
+    ) => {
+      const existing = await getByName(companyId, input.name);
+      if (existing) {
+        if (existing.status === "active") {
+          return await api.rotate(existing.id, { value: input.value }, actor);
+        }
+        if (existing.status === "deleted") {
+          throw conflict(
+            `Secret was previously deleted and cannot be reused: ${input.name}`,
+          );
+        }
+        throw unprocessable(`Secret exists in non-active state: ${input.name}`);
+      }
+      return await api.create(
+        companyId,
+        { name: input.name, provider: "local_encrypted", value: input.value },
+        actor,
+      );
+    },
+
     remove: async (secretId: string) => {
       const secret = await getById(secretId);
       if (!secret) return null;
@@ -2198,4 +2222,5 @@ export function secretService(db: Db) {
       return { config: resolved, secretKeys, manifest };
     },
   };
+  return api;
 }
