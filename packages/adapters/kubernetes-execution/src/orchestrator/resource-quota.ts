@@ -195,6 +195,6 @@ export async function applyLimitRange(
           },
         } as never,
       ),
-    (ns, body) => client.core.createNamespacedLimitRange(ns, body),
+    (ns, body) => client.core.createNamespacedLimitRange(ns, toLimitRangeWireBody(body)),
   );
 }

@@ -127,11 +127,9 @@ export async function ensureTenantNamespace(
         ? { matchLabels: input.controlPlane.namespaceLabels }
         : null,
     }));
-    // Tenant-restrictive Cilium policy: a SECOND CNP that intersects with the
-    // M1 baseline. Cilium evaluates multiple CNPs as AND, so the effective
-    // egress for the tenant becomes the M1 baseline ∩ this restriction —
-    // strictly tighter, never looser. Empty arrays in the policy → builder
-    // returns null → no second CNP applied.
+    // Tenant Cilium rules are allow-list rules and combine with other matching
+    // CNPs by union, so each emitted rule carries its own port/protocol bounds.
+    // Empty arrays in the policy -> builder returns null -> no tenant CNP applied.
     const tenantCnp = buildTenantCiliumPolicy({
       namespace,
       companySlug: input.company.slug,

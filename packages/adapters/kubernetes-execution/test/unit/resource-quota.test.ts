@@ -86,4 +86,31 @@ describe("buildLimitRange", () => {
     expect(container?.default?.cpu).toBe(defaultTenantLimits.default.cpu);
     expect(container?._default).toBeUndefined();
   });
+
+  it("creates with the Kubernetes wire field name for container defaults", async () => {
+    const createNamespacedLimitRange = vi.fn(async () => ({}));
+    const client = {
+      core: {
+        readNamespacedLimitRange: vi.fn(async () => {
+          const err = new Error("not found") as Error & { response?: { statusCode?: number } };
+          err.response = { statusCode: 404 };
+          throw err;
+        }),
+        createNamespacedLimitRange,
+      },
+    };
+    const lr = buildLimitRange({
+      namespace: "paperclip-acme",
+      companyId: "c-1",
+      companySlug: "acme",
+      override: null,
+    });
+
+    await applyLimitRange(client as never, lr);
+
+    const createBody = createNamespacedLimitRange.mock.calls[0]?.[1];
+    const container = createBody?.spec?.limits?.find((l: { type?: string }) => l.type === "Container");
+    expect(container?.default?.cpu).toBe(defaultTenantLimits.default.cpu);
+    expect(container?._default).toBeUndefined();
+  });
 });
