@@ -88,8 +88,6 @@ export interface WorkspaceDiffStats {
 export interface WorkspaceDiffResponse {
   workspaceId: string;
   companyId: string;
-  repoRoot: string;
-  cwd: string;
   view: WorkspaceDiffView;
   baseRef: string | null;
   headSha: string | null;

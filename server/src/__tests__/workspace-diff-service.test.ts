@@ -91,6 +91,7 @@ describe("workspaceDiffService", () => {
     await fs.rm(path.join(repoRoot, "delete-me.txt"));
     await fs.writeFile(path.join(repoRoot, "binary.bin"), Buffer.from([0, 1, 2, 3, 4, 5]));
     await fs.writeFile(path.join(repoRoot, "untracked.txt"), "brand new\n", "utf8");
+    await fs.writeFile(path.join(repoRoot, "empty-untracked.txt"), "", "utf8");
     await fs.writeFile(path.join(repoRoot, "oversized.txt"), "x".repeat(WORKSPACE_DIFF_CAPS.maxFileBytes + 1), "utf8");
 
     const diff = await workspaceDiffService().getDiff(createWorkspace(repoRoot), workingTreeQuery());
@@ -126,6 +127,13 @@ describe("workspaceDiffService", () => {
       additions: 1,
     });
     expect(byPath.get("untracked.txt")?.patches[0]?.patch).toContain("+brand new");
+    expect(byPath.get("empty-untracked.txt")?.patches[0]?.patch).toBe([
+      "diff --git a/empty-untracked.txt b/empty-untracked.txt",
+      "new file mode 100644",
+      "--- /dev/null",
+      "+++ b/empty-untracked.txt",
+      "",
+    ].join("\n"));
     expect(byPath.get("binary.bin")).toMatchObject({
       binary: true,
       unstaged: true,

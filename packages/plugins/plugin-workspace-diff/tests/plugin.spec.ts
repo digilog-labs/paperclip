@@ -8,6 +8,7 @@ describe("workspace diff plugin", () => {
   it("declares workspace Changes tabs and host diff capability", () => {
     expect(manifest.capabilities).toContain("ui.detailTab.register");
     expect(manifest.capabilities).toContain("execution.workspaces.read");
+    expect(manifest.capabilities).toContain("project.workspaces.read");
     expect(manifest.ui?.slots).toContainEqual(expect.objectContaining({
       type: "detailTab",
       displayName: "Changes",

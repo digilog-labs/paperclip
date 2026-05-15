@@ -442,17 +442,16 @@ function countAddedLines(content: string) {
 function buildUntrackedPatch(filePath: string, content: string) {
   const lines = content.length === 0 ? [] : content.split("\n");
   if (lines.length > 0 && lines[lines.length - 1] === "") lines.pop();
-  const hunkLines = lines.map((line) => `+${line}`).join("\n");
   const lineCount = countAddedLines(content);
-  return [
+  const header = [
     `diff --git a/${filePath} b/${filePath}`,
     "new file mode 100644",
     "--- /dev/null",
     `+++ b/${filePath}`,
-    `@@ -0,0 +1,${lineCount} @@`,
-    hunkLines,
-    "",
-  ].join("\n");
+  ];
+  if (lineCount === 0) return `${header.join("\n")}\n`;
+  const hunkLines = lines.map((line) => `+${line}`).join("\n");
+  return [...header, `@@ -0,0 +1,${lineCount} @@`, hunkLines, ""].join("\n");
 }
 
 async function buildUntrackedFilePatch(input: {
@@ -674,8 +673,6 @@ export function workspaceDiffService() {
       return {
         workspaceId: workspace.id,
         companyId: workspace.companyId,
-        repoRoot,
-        cwd,
         view: query.view,
         baseRef,
         headSha: await resolveHeadSha(cwd),

@@ -14,6 +14,7 @@ const manifest: PaperclipPluginManifestV1 = {
   capabilities: [
     "ui.detailTab.register",
     "execution.workspaces.read",
+    "project.workspaces.read",
   ],
   entrypoints: {
     worker: "./dist/worker.js",

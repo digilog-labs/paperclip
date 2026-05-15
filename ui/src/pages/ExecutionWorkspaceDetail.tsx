@@ -593,7 +593,11 @@ export function ExecutionWorkspaceDetail() {
     [project, workspace?.projectWorkspaceId],
   );
 
-  const { slots: workspacePluginDetailSlots } = usePluginSlots({
+  const {
+    slots: workspacePluginDetailSlots,
+    isLoading: workspacePluginDetailSlotsLoading,
+    errorMessage: workspacePluginDetailSlotsError,
+  } = usePluginSlots({
     slotTypes: ["detailTab"],
     entityType: "execution_workspace",
     companyId: workspace?.companyId ?? null,
@@ -1183,6 +1187,14 @@ export function ExecutionWorkspaceDetail() {
             context={pluginSlotContext}
             missingBehavior="placeholder"
           />
+        ) : isExecutionWorkspacePluginTab(activeTab) && workspacePluginDetailSlotsLoading ? (
+          <Card>
+            <CardContent className="py-6 text-sm text-muted-foreground">Loading workspace plugin...</CardContent>
+          </Card>
+        ) : isExecutionWorkspacePluginTab(activeTab) && workspacePluginDetailSlotsError ? (
+          <Card>
+            <CardContent className="py-6 text-sm text-destructive">{workspacePluginDetailSlotsError}</CardContent>
+          </Card>
         ) : (
           <ExecutionWorkspaceRoutinesList
             workspace={workspace}

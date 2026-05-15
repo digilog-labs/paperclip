@@ -47,8 +47,6 @@ export function diffResponse(overrides: Partial<WorkspaceDiffResponse> = {}): Wo
   return {
     workspaceId: "11111111-1111-4111-8111-111111111111",
     companyId: "22222222-2222-4222-8222-222222222222",
-    repoRoot: "/tmp/paperclip",
-    cwd: "/tmp/paperclip",
     view: "working-tree",
     baseRef: null,
     headSha: null,

@@ -571,6 +571,11 @@ export function buildHostServices(
    */
   const ensurePluginAvailableForCompany = async (_companyId: string) => {};
 
+  const ensureDeclaredCapability = (capability: import("@paperclipai/shared").PluginCapability) => {
+    if (!options.manifest || options.manifest.capabilities.includes(capability)) return;
+    throw new Error(`Missing required capability: ${capability}`);
+  };
+
   const getLocalFolderDeclaration = (folderKey: string) =>
     requireLocalFolderDeclaration(options.manifest?.localFolders, folderKey);
 
@@ -1227,6 +1232,7 @@ export function buildHostServices(
         if (!projectWorkspace) {
           throw new Error("Workspace not found");
         }
+        ensureDeclaredCapability("project.workspaces.read");
         return workspaceDiff.getDiff({
           id: projectWorkspace.id,
           companyId: projectWorkspace.companyId,

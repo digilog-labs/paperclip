@@ -52,7 +52,7 @@ function upstreamBaseRef(workspace: ProjectWorkspace) {
   if (workspace.repoRef) {
     return workspace.repoRef.startsWith("origin/") ? workspace.repoRef : `origin/${workspace.repoRef.replace(/^refs\/heads\//, "")}`;
   }
-  return "origin/master";
+  return null;
 }
 
 const SOURCE_TYPE_OPTIONS: Array<{ value: ProjectWorkspaceSourceType; label: string; description: string }> = [
@@ -431,8 +431,9 @@ export function ProjectWorkspaceDetail() {
       const params = new URLSearchParams({
         tab: "changes",
         diffView: "head",
-        baseRef: upstreamBaseRef(workspace),
       });
+      const baseRef = upstreamBaseRef(workspace);
+      if (baseRef) params.set("baseRef", baseRef);
       navigate(`${workspacePath}?${params.toString()}`);
       return;
     }
