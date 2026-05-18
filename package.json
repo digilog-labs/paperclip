@@ -1,6 +1,7 @@
 {
   "name": "paperclip",
   "private": true,
+  "description": "Digilog Labs fork — cloud deploy uses lockfile without embedded-postgres patch (master c89f48c3+)",
   "type": "module",
   "scripts": {
     "preflight:workspace-links": "node cli/node_modules/tsx/dist/cli.mjs scripts/ensure-workspace-package-links.ts",
