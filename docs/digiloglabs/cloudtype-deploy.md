@@ -78,13 +78,15 @@ Paperclip은 Next.js가 아닙니다. 로그에 `cp ./.next/*` 가 보이면 템
 
 ## DB 마이그레이션
 
-### `relation "agent_runtime_state" already exists`
+### `agent_runtime_state already exists` / Cloudtype만 81 pending
 
-**의미:** Supabase에 테이블은 있는데 migration 저널만 뒤처짐. 기동 시 pending migration을 다시 적용하다 충돌합니다.
+**증상:** 로컬 `pnpm db:migrate` → `No pending migrations` 인데, Cloudtype 로그는 `Applying 81 pending migration(s)...` 후 실패.
 
-**해결 (데이터를 비워도 될 때):**
+**원인:** Supabase **스키마(테이블)와 migration 저널(`__drizzle_migrations`)이 어긋난 상태**입니다. Cloudtype 기동 시 `db:migrate`로 CREATE를 다시 실행하면 충돌합니다. (`cloudtype-start`는 더 이상 migrate 하지 않음)
 
-1. Supabase SQL Editor:
+**한 번만 정리 (데이터 삭제 OK):**
+
+**1) Supabase 대시보드 → SQL Editor** 에서 실행:
 
 ```sql
 DROP SCHEMA public CASCADE;
@@ -94,26 +96,22 @@ GRANT ALL ON SCHEMA public TO public;
 DROP SCHEMA IF EXISTS drizzle CASCADE;
 ```
 
-2. 로컬 `.env`의 `DATABASE_URL` = **Cloudtype env와 동일한** Supabase URL
-
-3. 로컬에서 한 번:
+**2) 로컬** (`.env`의 `DATABASE_URL` = Cloudtype과 **완전 동일** 문자열):
 
 ```powershell
+cd D:\workspace\ws_digiloglabs\paperclip
 pnpm db:migrate
+# 반드시: No pending migrations
 ```
 
-4. Cloudtype `DATABASE_URL`을 로컬 `.env`와 **완전히 동일**하게 붙여넣기
+**3) Cloudtype env** — `DATABASE_URL` 붙여넣기 후 **재배포**
 
-5. (선택) 저널이 이미 맞으면 아래는 생략 가능. 드리프트가 있었을 때만:
+**4) 로그 확인**
 
-```env
-PAPERCLIP_MIGRATION_PROMPT=never
-PAPERCLIP_MIGRATION_AUTO_APPLY=false
-```
+- `[cloudtype-start] DATABASE_URL host=aws-1-ap-northeast-2.pooler.supabase.com db=postgres` (호스트가 로컬과 같아야 함)
+- 서버 기동 시 `Applying 81 pending` **없어야** 정상 (비대화형이면 pending 있을 때 자동 적용 시도 → 같은 오류)
 
-`never` + `false`는 **pending migration이 남아 있으면** 서버가 거부합니다. 로컬 `pnpm db:migrate` → `No pending migrations` 확인 후 설정하세요.
-
-6. 재배포 (`cloudtype-start`가 기동 전 `pnpm db:migrate` 실행)
+로컬과 Cloudtype **호스트/DB 이름**이 다르면 다른 DB를 보는 것입니다.
 
 ### 빈 DB
 

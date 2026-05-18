@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
  * Cloudtype runtime: prebuilt server/dist + server/ui-dist in git; install deps if needed.
+ * Do NOT run pnpm db:migrate here — drift DBs fail with "already exists". Sync journal locally first.
  */
 import { execSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
@@ -18,6 +19,22 @@ const installEnv = {
 
 function run(command, env = process.env) {
   execSync(command, { stdio: "inherit", env });
+}
+
+function logDatabaseTarget() {
+  const url = process.env.DATABASE_URL?.trim();
+  if (!url) {
+    console.warn("[cloudtype-start] DATABASE_URL is not set — server will use embedded Postgres");
+    return;
+  }
+  try {
+    const u = new URL(url);
+    console.log(
+      `[cloudtype-start] DATABASE_URL host=${u.hostname} db=${u.pathname.replace(/^\//, "")} user=${u.username}`,
+    );
+  } catch {
+    console.log("[cloudtype-start] DATABASE_URL is set (non-URL format)");
+  }
 }
 
 function workspaceDepsInstalled() {
@@ -44,6 +61,8 @@ if (!existsSync(entry) || !existsSync(ui)) {
   process.exit(1);
 }
 
+logDatabaseTarget();
+
 if (!workspaceDepsInstalled()) {
   console.log(
     "[cloudtype-start] installing monorepo dependencies (pnpm, ~1–2 min on first boot)...",
@@ -57,11 +76,6 @@ if (!workspaceDepsInstalled()) {
       "  Set Cloudtype build install to: pnpm install --frozen-lockfile",
   );
   process.exit(1);
-}
-
-if (process.env.DATABASE_URL) {
-  console.log("[cloudtype-start] checking database migrations (pnpm db:migrate)...");
-  run("pnpm db:migrate", installEnv);
 }
 
 const tsxLoader = existsSync("node_modules/tsx/dist/loader.mjs")
