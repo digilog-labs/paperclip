@@ -163,6 +163,7 @@ auth
   .option("--force", "Create new invite even if admin already exists", false)
   .option("--expires-hours <hours>", "Invite expiration window in hours", (value) => Number(value))
   .option("--base-url <url>", "Public base URL used to print invite link")
+  .option("--db-url <url>", "PostgreSQL URL (overrides config and DATABASE_URL)")
   .action(bootstrapCeoInvite);
 
 registerClientAuthCommands(auth);

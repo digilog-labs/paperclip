@@ -1,9 +1,12 @@
 import { createHash, randomBytes } from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
+import { config as loadDotenv } from "dotenv";
 import * as p from "@clack/prompts";
 import pc from "picocolors";
 import { and, eq, gt, isNull } from "drizzle-orm";
 import { createDb, instanceUserRoles, invites } from "@paperclipai/db";
-import { inferBindModeFromHost } from "@paperclipai/shared";
+import { inferBindModeFromHost, type DeploymentMode } from "@paperclipai/shared";
 import { loadPaperclipEnvFile } from "../config/env.js";
 import { readConfig, resolveConfigPath } from "../config/store.js";
 
@@ -51,6 +54,12 @@ function resolveBaseUrl(configPath?: string, explicitBaseUrl?: string) {
   return `http://${publicHost}:${port}`;
 }
 
+function deploymentModeFromEnv(): DeploymentMode | null {
+  const raw = process.env.PAPERCLIP_DEPLOYMENT_MODE?.trim();
+  if (raw === "authenticated" || raw === "local_trusted") return raw;
+  return null;
+}
+
 export async function bootstrapCeoInvite(opts: {
   config?: string;
   force?: boolean;
@@ -60,22 +69,37 @@ export async function bootstrapCeoInvite(opts: {
 }) {
   const configPath = resolveConfigPath(opts.config);
   loadPaperclipEnvFile(configPath);
-  const config = readConfig(configPath);
-  if (!config) {
-    p.log.error(`No config found at ${configPath}. Run ${pc.cyan("paperclip onboard")} first.`);
-    return;
+  const cwdEnv = path.join(process.cwd(), ".env");
+  if (fs.existsSync(cwdEnv)) {
+    loadDotenv({ path: cwdEnv, override: false, quiet: true });
   }
+  const config = readConfig(configPath);
+  const dbUrl = resolveDbUrl(configPath, opts.dbUrl);
 
-  if (config.server.deploymentMode !== "authenticated") {
+  if (!config) {
+    if (!dbUrl) {
+      p.log.error(
+        `No config at ${configPath} and no DATABASE_URL. Run ${pc.cyan("paperclipai onboard")} or set DATABASE_URL / --db-url.`,
+      );
+      return;
+    }
+    const modeFromEnv = deploymentModeFromEnv();
+    if (modeFromEnv === "local_trusted") {
+      p.log.info("Deployment mode is local_trusted. Bootstrap CEO invite is only required for authenticated mode.");
+      return;
+    }
+    if (modeFromEnv !== "authenticated") {
+      p.log.warn(
+        `No config file — assuming authenticated remote instance. Set ${pc.cyan("PAPERCLIP_DEPLOYMENT_MODE=authenticated")} to silence this.`,
+      );
+    }
+  } else if (config.server.deploymentMode !== "authenticated") {
     p.log.info("Deployment mode is local_trusted. Bootstrap CEO invite is only required for authenticated mode.");
     return;
   }
 
-  const dbUrl = resolveDbUrl(configPath, opts.dbUrl);
   if (!dbUrl) {
-    p.log.error(
-      "Could not resolve database connection for bootstrap.",
-    );
+    p.log.error("Could not resolve database connection for bootstrap.");
     return;
   }
 

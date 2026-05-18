@@ -81,7 +81,27 @@ Server           3100
 
 `UI disabled` → **`SERVE_UI=true`** 누락.
 
-첫 접속: 보드 로그인/초대는 `pnpm paperclipai onboard` (로컬 PC, 같은 `DATABASE_URL`).
+### 첫 관리자 (CEO 초대)
+
+**로컬 PC** (repo `.env`에 `DATABASE_URL`):
+
+```powershell
+cd D:\workspace\ws_digiloglabs\paperclip
+pnpm paperclipai auth bootstrap-ceo --force --base-url https://agentc.co.kr
+```
+
+**Cloudtype 터미널** (서비스 런타임 env에 `DATABASE_URL`, `PAPERCLIP_PUBLIC_URL` 이미 있음):
+
+```sh
+cd /app
+pnpm run cloudtype:bootstrap-ceo
+# 또는
+pnpm paperclipai auth bootstrap-ceo --force --base-url "$PAPERCLIP_PUBLIC_URL"
+```
+
+출력된 `https://agentc.co.kr/invite/pcp_bootstrap_...` 링크로 가입·수락.
+
+`local_trusted` → `authenticated` 전환 직후 **board-claim** 대신 이 초대 URL을 쓰면 됩니다.
 
 `npm start` → `cloudtype-start.mjs` → `server/dist` + `server/ui-dist` 확인 후 서버 기동 (서버에서 **빌드 안 함**).
 

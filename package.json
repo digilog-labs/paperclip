@@ -19,6 +19,7 @@
     "build:cloudtype": "pnpm --filter @paperclipai/plugin-sdk build && pnpm --filter @paperclipai/ui build && node scripts/copy-ui-dist.mjs && pnpm --filter @paperclipai/server exec tsc && node scripts/copy-server-onboarding-assets.mjs",
     "build:deploy:git": "pnpm run build:cloudtype && node scripts/verify-deploy-artifacts.mjs",
     "start": "node scripts/cloudtype-start.mjs",
+    "cloudtype:bootstrap-ceo": "node cli/node_modules/tsx/dist/cli.mjs cli/src/index.ts auth bootstrap-ceo --force",
     "typecheck": "pnpm run preflight:workspace-links && pnpm -r typecheck",
     "typecheck:build-gaps": "pnpm run preflight:workspace-links && node scripts/run-typecheck-build-gaps.mjs",
     "test": "pnpm run test:run",
