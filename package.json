@@ -1,6 +1,6 @@
 {
   "name": "paperclip",
-  "version": "0.0.0-digilog",
+  "version": "0.0.2-digilog",
   "private": true,
   "description": "Digilog Labs fork — deploy via Dockerfile.cloudtype (not Node auto-build)",
   "type": "module",

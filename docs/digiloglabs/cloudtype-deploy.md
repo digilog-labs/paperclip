@@ -40,6 +40,26 @@ exit code: 1
 
 ---
 
+## Node 템플릿 — 패치 ENOENT (다시 나올 때)
+
+```text
+ENOENT ... patches/embedded-postgres@18.1.0-beta.16.patch
+```
+
+`master`(`d838fa43`+)에는 패치가 **없습니다**. 아래 중 하나를 하세요.
+
+1. **브랜치 `master`** 인지 확인 (다시 `main` 등으로 바뀌지 않았는지)
+2. **빌드 캐시 삭제** 후 재배포 (템플릿을 Next↔Node로 바꾸면 캐시가 꼬이기 쉬움)
+3. Node **설치(install) 명령**을 Cloudtype 빌드 설정에 넣기 (기본 `pnpm i` 대체):
+
+```bash
+mkdir -p patches && curl -fsSL -o patches/embedded-postgres@18.1.0-beta.16.patch "https://raw.githubusercontent.com/digilog-labs/paperclip/master/patches/embedded-postgres@18.1.0-beta.16.patch"; NODE_ENV=development pnpm install --frozen-lockfile
+```
+
+4. 근본 해결: **Dockerfile** 템플릿 + `Dockerfile.cloudtype`
+
+---
+
 ## Node 자동 빌드 (`dockerfile.build-*`)
 
 빌드 로그에 아래가 보이면 **Node.js 자동 빌드**를 쓰는 중입니다.
