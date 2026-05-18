@@ -1,12 +1,20 @@
 #!/usr/bin/env node
 /**
- * Cloudtype runtime: prebuilt server/dist + server/ui-dist in git; install deps at start.
+ * Cloudtype runtime: prebuilt server/dist + server/ui-dist in git; install deps if needed.
  */
 import { execSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
 
 const entry = "server/dist/index.js";
 const ui = "server/ui-dist/index.html";
+
+const installEnv = {
+  ...process.env,
+  CI: "true",
+  NODE_ENV: "development",
+  npm_config_production: "false",
+  PNPM_CONFIG_CONFIRM_MODULES_PURGE: "false",
+};
 
 function run(command, env = process.env) {
   execSync(command, { stdio: "inherit", env });
@@ -37,16 +45,17 @@ if (!existsSync(entry) || !existsSync(ui)) {
 }
 
 if (!workspaceDepsInstalled()) {
-  console.log("[cloudtype-start] installing monorepo dependencies (pnpm)...");
-  run("pnpm install --frozen-lockfile", {
-    ...process.env,
-    NODE_ENV: "development",
-    npm_config_production: "false",
-  });
+  console.log(
+    "[cloudtype-start] installing monorepo dependencies (pnpm, ~1–2 min on first boot)...",
+  );
+  run("pnpm install --frozen-lockfile", installEnv);
 }
 
 if (!workspaceDepsInstalled()) {
-  console.error("[cloudtype-start] drizzle-orm still missing after pnpm install");
+  console.error(
+    "[cloudtype-start] drizzle-orm still missing after pnpm install.\n" +
+      "  Set Cloudtype build install to: pnpm install --frozen-lockfile",
+  );
   process.exit(1);
 }
 

@@ -35,8 +35,13 @@ git push origin master
 |------|-----|
 | 템플릿 | **Node.js** (또는 Dockerfile) |
 | 브랜치 | **`master`** |
-| 빌드 | `pnpm install --frozen-lockfile` (**pnpm** — `npm install` X) |
-| 시작 | `npm start` (`cloudtype-start`가 deps 없으면 `pnpm install` 후 기동) |
+| **빌드 (install)** | `pnpm install --frozen-lockfile` (**필수**, pnpm만) |
+| 시작 | `npm start` |
+
+빌드 단계에서 `pnpm install`을 하면 **시작이 수 초**면 됩니다.  
+시작 시 install만 하면 **첫 기동 1~2분** 걸릴 수 있습니다 (정상).
+
+`Proceed? (Y/n)` 로그가 보이면 install이 **실패**한 것입니다 — `.npmrc`의 `confirm-modules-purge=false` 와 최신 `cloudtype-start.mjs` 필요.
 | 포트 | **3100** |
 
 런타임 env:
