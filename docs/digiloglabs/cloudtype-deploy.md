@@ -44,14 +44,43 @@ git push origin master
 `Proceed? (Y/n)` 로그가 보이면 install이 **실패**한 것입니다 — `.npmrc`의 `confirm-modules-purge=false` 와 최신 `cloudtype-start.mjs` 필요.
 | 포트 | **3100** |
 
-런타임 env:
+### Cloudtype 포트
+
+서비스 **포트 3100** (외부 HTTPS → 컨테이너 3100). Cloudtype 대시보드 포트와 `PORT` env가 같아야 합니다.
+
+### 런타임 env (필수)
+
+로그에 `Bind loopback (127.0.0.1)` 이면 **외부에서 접속 불가**입니다. 반드시:
 
 ```env
-DATABASE_URL=postgresql://...@...pooler.supabase.com:5432/postgres
-BETTER_AUTH_SECRET=<랜덤 32자 이상>
+HOST=0.0.0.0
 PORT=3100
 SERVE_UI=true
+DATABASE_URL=postgresql://...@...pooler.supabase.com:5432/postgres
+BETTER_AUTH_SECRET=<랜덤 32자 이상 32자>
 ```
+
+성공 시 기동 배너:
+
+```text
+Bind             all interfaces (0.0.0.0)
+Server           3100
+UI               http://0.0.0.0:3100/   (또는 static 경로)
+```
+
+`UI disabled` → Cloudtype에 **`SERVE_UI=true`** 가 없음 (로컬 `.env`의 `false`를 그대로 쓰지 말 것).
+
+### 공개 URL + 로그인 (권장)
+
+Cloudtype URL이 `https://xxxx.cloudtype.app` 이면:
+
+```env
+PAPERCLIP_DEPLOYMENT_MODE=authenticated
+PAPERCLIP_DEPLOYMENT_EXPOSURE=private
+PAPERCLIP_PUBLIC_URL=https://xxxx.cloudtype.app
+```
+
+첫 접속 후 `pnpm paperclipai onboard` 로 보드 사용자/초대 설정 (로컬에서 같은 DB를 쓰는 경우).
 
 `npm start` → `cloudtype-start.mjs` → `server/dist` + `server/ui-dist` 확인 후 서버 기동 (서버에서 **빌드 안 함**).
 

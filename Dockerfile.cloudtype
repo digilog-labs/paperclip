@@ -12,7 +12,11 @@ COPY . .
 ENV CLOUDTYPE_BUILD=1 NODE_OPTIONS=--max-old-space-size=1536
 RUN NODE_ENV=development pnpm install --frozen-lockfile \
   && pnpm run build:cloudtype
-ENV NODE_ENV=production HOST=0.0.0.0 PORT=3100 SERVE_UI=true \
-  PAPERCLIP_HOME=/paperclip PAPERCLIP_INSTANCE_ID=default
+ENV NODE_ENV=production \
+  HOST=0.0.0.0 \
+  PORT=3100 \
+  SERVE_UI=true \
+  PAPERCLIP_HOME=/paperclip \
+  PAPERCLIP_INSTANCE_ID=default
 EXPOSE 3100
 CMD ["node", "scripts/cloudtype-start.mjs"]
