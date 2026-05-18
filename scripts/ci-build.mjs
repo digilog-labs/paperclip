@@ -5,6 +5,7 @@
  */
 import { execSync } from "node:child_process";
 import { existsSync } from "node:fs";
+import { cloudtypeBuildEnv } from "./cloudtype-build-env.mjs";
 
 /** Cloudtype/Docker often set NODE_ENV=production before install — skips @types/react. */
 function run(command, env = process.env) {
@@ -25,9 +26,9 @@ const hasReactTypes =
   existsSync("node_modules/@types/react/package.json");
 const monorepoInstallIncomplete = !existsSync(tsxCli) || !hasReactTypes;
 
-if (monorepoInstallIncomplete) {
-  installAllDeps();
-  run("pnpm run build:cloudtype");
+if (process.env.CLOUDTYPE_BUILD === "1" || monorepoInstallIncomplete) {
+  if (monorepoInstallIncomplete) installAllDeps();
+  run("pnpm run build:cloudtype", cloudtypeBuildEnv);
 } else {
   run("pnpm run preflight:workspace-links");
   run("pnpm -r build");

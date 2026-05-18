@@ -1,6 +1,6 @@
 {
   "name": "paperclip",
-  "version": "0.0.2-digilog",
+  "version": "0.0.3-digilog",
   "private": true,
   "description": "Digilog Labs fork — deploy via Dockerfile.cloudtype (not Node auto-build)",
   "type": "module",
@@ -16,7 +16,7 @@
     "storybook": "pnpm --filter @paperclipai/ui storybook",
     "build-storybook": "pnpm --filter @paperclipai/ui build-storybook",
     "build": "node scripts/ci-build.mjs",
-    "build:cloudtype": "pnpm --filter @paperclipai/ui build && pnpm --filter @paperclipai/plugin-sdk build && pnpm --filter @paperclipai/server build",
+    "build:cloudtype": "pnpm --filter @paperclipai/plugin-sdk build && pnpm --filter @paperclipai/ui run build:deploy && node scripts/copy-ui-dist.mjs && pnpm --filter @paperclipai/server build",
     "start": "node scripts/cloudtype-start.mjs",
     "typecheck": "pnpm run preflight:workspace-links && pnpm -r typecheck",
     "typecheck:build-gaps": "pnpm run preflight:workspace-links && node scripts/run-typecheck-build-gaps.mjs",

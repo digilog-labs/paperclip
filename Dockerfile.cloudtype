@@ -9,6 +9,7 @@ RUN apt-get update \
 WORKDIR /app
 COPY . .
 # Install devDependencies (@types/react, typescript) — required for `tsc -b` in ui build.
+ENV CLOUDTYPE_BUILD=1 NODE_OPTIONS=--max-old-space-size=1536
 RUN NODE_ENV=development pnpm install --frozen-lockfile \
   && pnpm run build:cloudtype
 ENV NODE_ENV=production HOST=0.0.0.0 PORT=3100 SERVE_UI=true \
