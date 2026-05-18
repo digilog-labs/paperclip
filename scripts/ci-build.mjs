@@ -6,15 +6,27 @@
 import { execSync } from "node:child_process";
 import { existsSync } from "node:fs";
 
-function run(command) {
-  execSync(command, { stdio: "inherit", env: process.env });
+/** Cloudtype/Docker often set NODE_ENV=production before install — skips @types/react. */
+function run(command, env = process.env) {
+  execSync(command, { stdio: "inherit", env });
+}
+
+function installAllDeps() {
+  run("pnpm install --frozen-lockfile", {
+    ...process.env,
+    NODE_ENV: "development",
+    npm_config_production: "false",
+  });
 }
 
 const tsxCli = "cli/node_modules/tsx/dist/cli.mjs";
-const monorepoInstallIncomplete = !existsSync(tsxCli);
+const hasReactTypes =
+  existsSync("ui/node_modules/@types/react/package.json") ||
+  existsSync("node_modules/@types/react/package.json");
+const monorepoInstallIncomplete = !existsSync(tsxCli) || !hasReactTypes;
 
 if (monorepoInstallIncomplete) {
-  run("pnpm install --frozen-lockfile");
+  installAllDeps();
   run("pnpm run build:cloudtype");
 } else {
   run("pnpm run preflight:workspace-links");
