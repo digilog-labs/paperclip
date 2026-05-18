@@ -1,6 +1,32 @@
 # Cloudtype 배포 (Digilog Labs)
 
-## 지금 오류가 나는 이유
+Paperclip은 **Next.js 앱이 아닙니다** (Vite UI + Express 서버). Cloudtype에서 **Next.js 템플릿을 쓰면 빌드가 실패**합니다.
+
+## Next.js 오류 (`cp -rf ./.next/* /output`)
+
+```text
+RUN mkdir /output && cp -rf ./.next/* /output
+exit code: 1
+```
+
+**원인:** 서비스가 **Next.js** 프리셋으로 잡혀 있음. 이 repo에는 `.next` 빌드 결과가 없습니다.
+
+**해결:** Cloudtype 서비스 설정에서 템플릿을 **Dockerfile**로 바꿉니다 (Next.js / Node 자동 감지 X).
+
+| 설정 | 값 |
+|------|-----|
+| 템플릿 | **Dockerfile** |
+| Dockerfile 경로 | `Dockerfile.cloudtype` |
+| 브랜치 | `master` |
+| 포트 | `3100` |
+
+성공 로그: `Dockerfile.cloudtype`, `pnpm run build:cloudtype` — **`.next` / `dockerfile.build-` 없음**.
+
+설정 변경이 안 먹으면 서비스를 삭제하고 위 값으로 **새로 생성**하는 편이 빠릅니다.
+
+---
+
+## Node 자동 빌드 (`dockerfile.build-*`)
 
 빌드 로그에 아래가 보이면 **Node.js 자동 빌드**를 쓰는 중입니다.
 
