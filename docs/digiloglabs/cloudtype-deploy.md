@@ -35,8 +35,8 @@ git push origin master
 |------|-----|
 | 템플릿 | **Node.js** (또는 Dockerfile) |
 | 브랜치 | **`master`** |
-| 빌드 | `pnpm install --frozen-lockfile` (또는 비움) |
-| 시작 | `npm start` |
+| 빌드 | `pnpm install --frozen-lockfile` (**pnpm** — `npm install` X) |
+| 시작 | `npm start` (`cloudtype-start`가 deps 없으면 `pnpm install` 후 기동) |
 | 포트 | **3100** |
 
 런타임 env:

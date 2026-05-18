@@ -1,16 +1,29 @@
 #!/usr/bin/env node
 /**
- * Cloudtype runtime: expects prebuilt artifacts committed via `pnpm run build:deploy:git`.
- * No Vite/tsc on the server — avoids OOM on small instances.
+ * Cloudtype runtime: prebuilt server/dist + server/ui-dist in git; install deps at start.
  */
 import { execSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 
 const entry = "server/dist/index.js";
 const ui = "server/ui-dist/index.html";
 
 function run(command, env = process.env) {
   execSync(command, { stdio: "inherit", env });
+}
+
+function workspaceDepsInstalled() {
+  if (existsSync("server/node_modules/drizzle-orm")) return true;
+  if (existsSync("node_modules/drizzle-orm")) return true;
+  try {
+    const pnpmDir = "node_modules/.pnpm";
+    if (existsSync(pnpmDir)) {
+      return readdirSync(pnpmDir).some((name) => name.startsWith("drizzle-orm@"));
+    }
+  } catch {
+    // ignore
+  }
+  return false;
 }
 
 if (!existsSync(entry) || !existsSync(ui)) {
@@ -20,6 +33,20 @@ if (!existsSync(entry) || !existsSync(ui)) {
       "  Then commit: server/dist server/ui-dist packages/plugins/sdk/dist\n" +
       "  See docs/digiloglabs/cloudtype-deploy.md",
   );
+  process.exit(1);
+}
+
+if (!workspaceDepsInstalled()) {
+  console.log("[cloudtype-start] installing monorepo dependencies (pnpm)...");
+  run("pnpm install --frozen-lockfile", {
+    ...process.env,
+    NODE_ENV: "development",
+    npm_config_production: "false",
+  });
+}
+
+if (!workspaceDepsInstalled()) {
+  console.error("[cloudtype-start] drizzle-orm still missing after pnpm install");
   process.exit(1);
 }
 
