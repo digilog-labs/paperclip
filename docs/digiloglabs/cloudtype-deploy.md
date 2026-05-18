@@ -78,7 +78,40 @@ Paperclip은 Next.js가 아닙니다. 로그에 `cp ./.next/*` 가 보이면 템
 
 ## DB 마이그레이션
 
-Supabase에 스키마가 없으면 로컬에서 한 번:
+### `relation "agent_runtime_state" already exists`
+
+**의미:** Supabase에 테이블은 있는데 migration 저널만 뒤처짐. 기동 시 pending migration을 다시 적용하다 충돌합니다.
+
+**해결 (데이터를 비워도 될 때):**
+
+1. Supabase SQL Editor:
+
+```sql
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO public;
+DROP SCHEMA IF EXISTS drizzle CASCADE;
+```
+
+2. 로컬 `.env`의 `DATABASE_URL` = **Cloudtype env와 동일한** Supabase URL
+
+3. 로컬에서 한 번:
+
+```powershell
+pnpm db:migrate
+```
+
+4. Cloudtype env 추가:
+
+```env
+PAPERCLIP_MIGRATION_PROMPT=never
+PAPERCLIP_MIGRATION_AUTO_APPLY=false
+```
+
+5. 재배포
+
+### 빈 DB
 
 ```powershell
 pnpm db:migrate
