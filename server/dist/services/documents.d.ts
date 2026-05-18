@@ -1,0 +1,347 @@
+import type { Db } from "@paperclipai/db";
+export declare function extractLegacyPlanBody(description: string | null | undefined): string | null;
+export declare function documentService(db: Db): {
+    getIssueDocumentPayload: (issue: {
+        id: string;
+        description: string | null;
+    }, options?: {
+        includeSystem?: boolean;
+    }) => Promise<{
+        planDocument: {
+            latestRevisionId: string | null;
+            latestRevisionNumber: number;
+            createdByAgentId: string | null;
+            createdByUserId: string | null;
+            updatedByAgentId: string | null;
+            updatedByUserId: string | null;
+            lockedAt: Date | null;
+            lockedByAgentId: string | null;
+            lockedByUserId: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            body?: string | undefined;
+            id: string;
+            companyId: string;
+            issueId: string;
+            key: string;
+            title: string | null;
+            format: string;
+        } | null;
+        documentSummaries: {
+            latestRevisionId: string | null;
+            latestRevisionNumber: number;
+            createdByAgentId: string | null;
+            createdByUserId: string | null;
+            updatedByAgentId: string | null;
+            updatedByUserId: string | null;
+            lockedAt: Date | null;
+            lockedByAgentId: string | null;
+            lockedByUserId: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            body?: string | undefined;
+            id: string;
+            companyId: string;
+            issueId: string;
+            key: string;
+            title: string | null;
+            format: string;
+        }[];
+        legacyPlanDocument: {
+            key: "plan";
+            body: string;
+            source: "issue_description";
+        } | null;
+    }>;
+    listIssueDocuments: (issueId: string, options?: {
+        includeSystem?: boolean;
+    }) => Promise<{
+        latestRevisionId: string | null;
+        latestRevisionNumber: number;
+        createdByAgentId: string | null;
+        createdByUserId: string | null;
+        updatedByAgentId: string | null;
+        updatedByUserId: string | null;
+        lockedAt: Date | null;
+        lockedByAgentId: string | null;
+        lockedByUserId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        body?: string | undefined;
+        id: string;
+        companyId: string;
+        issueId: string;
+        key: string;
+        title: string | null;
+        format: string;
+    }[]>;
+    getIssueDocumentByKey: (issueId: string, rawKey: string) => Promise<{
+        latestRevisionId: string | null;
+        latestRevisionNumber: number;
+        createdByAgentId: string | null;
+        createdByUserId: string | null;
+        updatedByAgentId: string | null;
+        updatedByUserId: string | null;
+        lockedAt: Date | null;
+        lockedByAgentId: string | null;
+        lockedByUserId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        body?: string | undefined;
+        id: string;
+        companyId: string;
+        issueId: string;
+        key: string;
+        title: string | null;
+        format: string;
+    } | null>;
+    listIssueDocumentRevisions: (issueId: string, rawKey: string) => Promise<{
+        id: string;
+        companyId: string;
+        documentId: string;
+        issueId: string;
+        key: string;
+        revisionNumber: number;
+        title: string | null;
+        format: string;
+        body: string;
+        changeSummary: string | null;
+        createdByAgentId: string | null;
+        createdByUserId: string | null;
+        createdAt: Date;
+    }[]>;
+    upsertIssueDocument: (input: {
+        issueId: string;
+        key: string;
+        title?: string | null;
+        format: string;
+        body: string;
+        changeSummary?: string | null;
+        baseRevisionId?: string | null;
+        createdByAgentId?: string | null;
+        createdByUserId?: string | null;
+        createdByRunId?: string | null;
+        lockedDocumentStrategy?: "conflict" | "create_new_document";
+    }) => Promise<{
+        created: true;
+        redirectedFromLockedDocument: {
+            id: string;
+            key: string;
+        };
+        document: {
+            id: string;
+            companyId: string;
+            issueId: string;
+            key: string;
+            title: string | null;
+            format: string;
+            body: string;
+            latestRevisionId: string;
+            latestRevisionNumber: number;
+            createdByAgentId: string | null;
+            createdByUserId: string | null;
+            updatedByAgentId: string | null;
+            updatedByUserId: string | null;
+            lockedAt: null;
+            lockedByAgentId: null;
+            lockedByUserId: null;
+            createdAt: Date;
+            updatedAt: Date;
+        };
+    } | {
+        created: false;
+        document: {
+            title: string | null;
+            format: string;
+            body: string;
+            latestRevisionId: string;
+            latestRevisionNumber: number;
+            updatedByAgentId: string | null;
+            updatedByUserId: string | null;
+            lockedAt: null;
+            lockedByAgentId: string | null;
+            lockedByUserId: string | null;
+            updatedAt: Date;
+            id: string;
+            companyId: string;
+            issueId: string;
+            key: string;
+            latestBody: string;
+            createdByAgentId: string | null;
+            createdByUserId: string | null;
+            createdAt: Date;
+        };
+        redirectedFromLockedDocument?: undefined;
+    } | {
+        created: true;
+        document: {
+            id: string;
+            companyId: string;
+            issueId: string;
+            key: string;
+            title: string | null;
+            format: string;
+            body: string;
+            latestRevisionId: string;
+            latestRevisionNumber: number;
+            createdByAgentId: string | null;
+            createdByUserId: string | null;
+            updatedByAgentId: string | null;
+            updatedByUserId: string | null;
+            lockedAt: Date | null;
+            lockedByAgentId: string | null;
+            lockedByUserId: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+        };
+        redirectedFromLockedDocument?: undefined;
+    }>;
+    restoreIssueDocumentRevision: (input: {
+        issueId: string;
+        key: string;
+        revisionId: string;
+        createdByAgentId?: string | null;
+        createdByUserId?: string | null;
+    }) => Promise<{
+        restoredFromRevisionId: string;
+        restoredFromRevisionNumber: number;
+        document: {
+            title: string | null;
+            format: string;
+            body: string;
+            latestRevisionId: string;
+            latestRevisionNumber: number;
+            updatedByAgentId: string | null;
+            updatedByUserId: string | null;
+            updatedAt: Date;
+            id: string;
+            companyId: string;
+            issueId: string;
+            key: string;
+            latestBody: string;
+            createdByAgentId: string | null;
+            createdByUserId: string | null;
+            lockedAt: Date | null;
+            lockedByAgentId: string | null;
+            lockedByUserId: string | null;
+            createdAt: Date;
+        };
+    }>;
+    lockIssueDocument: (input: {
+        issueId: string;
+        key: string;
+        lockedByAgentId?: string | null;
+        lockedByUserId?: string | null;
+    }) => Promise<{
+        changed: false;
+        document: {
+            latestRevisionId: string | null;
+            latestRevisionNumber: number;
+            createdByAgentId: string | null;
+            createdByUserId: string | null;
+            updatedByAgentId: string | null;
+            updatedByUserId: string | null;
+            lockedAt: Date | null;
+            lockedByAgentId: string | null;
+            lockedByUserId: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            body?: string | undefined;
+            id: string;
+            companyId: string;
+            issueId: string;
+            key: string;
+            title: string | null;
+            format: string;
+        };
+    } | {
+        changed: true;
+        document: {
+            lockedAt: Date;
+            lockedByAgentId: string | null;
+            lockedByUserId: string | null;
+            updatedAt: Date;
+            latestRevisionId: string | null;
+            latestRevisionNumber: number;
+            createdByAgentId: string | null;
+            createdByUserId: string | null;
+            updatedByAgentId: string | null;
+            updatedByUserId: string | null;
+            createdAt: Date;
+            body?: string | undefined;
+            id: string;
+            companyId: string;
+            issueId: string;
+            key: string;
+            title: string | null;
+            format: string;
+        };
+    }>;
+    unlockIssueDocument: (issueId: string, rawKey: string) => Promise<{
+        changed: false;
+        document: {
+            latestRevisionId: string | null;
+            latestRevisionNumber: number;
+            createdByAgentId: string | null;
+            createdByUserId: string | null;
+            updatedByAgentId: string | null;
+            updatedByUserId: string | null;
+            lockedAt: Date | null;
+            lockedByAgentId: string | null;
+            lockedByUserId: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            body?: string | undefined;
+            id: string;
+            companyId: string;
+            issueId: string;
+            key: string;
+            title: string | null;
+            format: string;
+        };
+    } | {
+        changed: true;
+        document: {
+            lockedAt: null;
+            lockedByAgentId: null;
+            lockedByUserId: null;
+            updatedAt: Date;
+            latestRevisionId: string | null;
+            latestRevisionNumber: number;
+            createdByAgentId: string | null;
+            createdByUserId: string | null;
+            updatedByAgentId: string | null;
+            updatedByUserId: string | null;
+            createdAt: Date;
+            body?: string | undefined;
+            id: string;
+            companyId: string;
+            issueId: string;
+            key: string;
+            title: string | null;
+            format: string;
+        };
+    }>;
+    deleteIssueDocument: (issueId: string, rawKey: string) => Promise<{
+        body: string;
+        latestRevisionId: string | null;
+        id: string;
+        companyId: string;
+        issueId: string;
+        key: string;
+        title: string | null;
+        format: string;
+        latestBody: string;
+        latestRevisionNumber: number;
+        createdByAgentId: string | null;
+        createdByUserId: string | null;
+        updatedByAgentId: string | null;
+        updatedByUserId: string | null;
+        lockedAt: Date | null;
+        lockedByAgentId: string | null;
+        lockedByUserId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+    } | null>;
+};
+//# sourceMappingURL=documents.d.ts.map

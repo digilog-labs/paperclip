@@ -2,7 +2,7 @@
   "name": "paperclip",
   "version": "0.0.3-digilog",
   "private": true,
-  "description": "Digilog Labs fork — deploy via Dockerfile.cloudtype (not Node auto-build)",
+  "description": "Digilog Labs fork — Cloudtype: commit prebuilt server/dist + server/ui-dist (build:deploy:git)",
   "type": "module",
   "scripts": {
     "preflight:workspace-links": "node cli/node_modules/tsx/dist/cli.mjs scripts/ensure-workspace-package-links.ts",
@@ -16,7 +16,8 @@
     "storybook": "pnpm --filter @paperclipai/ui storybook",
     "build-storybook": "pnpm --filter @paperclipai/ui build-storybook",
     "build": "node scripts/ci-build.mjs",
-    "build:cloudtype": "pnpm --filter @paperclipai/plugin-sdk build && pnpm --filter @paperclipai/ui run build:deploy && node scripts/copy-ui-dist.mjs && pnpm --filter @paperclipai/server build",
+    "build:cloudtype": "pnpm --filter @paperclipai/plugin-sdk build && pnpm --filter @paperclipai/ui build && node scripts/copy-ui-dist.mjs && pnpm --filter @paperclipai/server exec tsc && node scripts/copy-server-onboarding-assets.mjs",
+    "build:deploy:git": "pnpm run build:cloudtype && node scripts/verify-deploy-artifacts.mjs",
     "start": "node scripts/cloudtype-start.mjs",
     "typecheck": "pnpm run preflight:workspace-links && pnpm -r typecheck",
     "typecheck:build-gaps": "pnpm run preflight:workspace-links && node scripts/run-typecheck-build-gaps.mjs",
@@ -53,6 +54,9 @@
     "test:release-smoke:headed": "npx playwright test --config tests/release-smoke/playwright.config.ts --headed",
     "metrics:paperclip-commits": "tsx scripts/paperclip-commit-metrics.ts",
     "perf:issue-chat-long-thread": "node scripts/measure-issue-chat-long-thread.mjs"
+  },
+  "dependencies": {
+    "tsx": "^4.19.2"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",

@@ -1,27 +1,33 @@
 #!/usr/bin/env node
 /**
- * Cloudtype Node template may run start without shipping build artifacts (no server/dist).
- * Install + build once if the compiled server entry is missing, then run it.
+ * Cloudtype runtime: expects prebuilt artifacts committed via `pnpm run build:deploy:git`.
+ * No Vite/tsc on the server — avoids OOM on small instances.
  */
 import { execSync } from "node:child_process";
 import { existsSync } from "node:fs";
-import { cloudtypeBuildEnv } from "./cloudtype-build-env.mjs";
 
 const entry = "server/dist/index.js";
+const ui = "server/ui-dist/index.html";
 
 function run(command, env = process.env) {
   execSync(command, { stdio: "inherit", env });
 }
 
-if (!existsSync(entry)) {
-  console.log(`[cloudtype-start] ${entry} missing — pnpm install + build:cloudtype`);
-  run("pnpm install --frozen-lockfile", cloudtypeBuildEnv);
-  run("pnpm run build:cloudtype", cloudtypeBuildEnv);
-}
-
-if (!existsSync(entry)) {
-  console.error(`[cloudtype-start] build failed: ${entry} still missing`);
+if (!existsSync(entry) || !existsSync(ui)) {
+  console.error(
+    "[cloudtype-start] Missing prebuilt deploy artifacts.\n" +
+      "  On your PC: pnpm run build:deploy:git\n" +
+      "  Then commit: server/dist server/ui-dist packages/plugins/sdk/dist\n" +
+      "  See docs/digiloglabs/cloudtype-deploy.md",
+  );
   process.exit(1);
 }
 
-run(`node ${entry}`, { ...process.env, NODE_ENV: process.env.NODE_ENV ?? "production" });
+const tsxLoader = existsSync("node_modules/tsx/dist/loader.mjs")
+  ? "./node_modules/tsx/dist/loader.mjs"
+  : "./server/node_modules/tsx/dist/loader.mjs";
+
+run(`node --import ${tsxLoader} ${entry}`, {
+  ...process.env,
+  NODE_ENV: process.env.NODE_ENV ?? "production",
+});

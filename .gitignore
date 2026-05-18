@@ -3,6 +3,13 @@ node_modules/
 **/node_modules
 **/node_modules/
 dist/
+# Digilog Cloudtype: prebuilt deploy artifacts (see pnpm run build:deploy:git)
+!server/dist/
+!server/dist/**
+!server/ui-dist/
+!server/ui-dist/**
+!packages/plugins/sdk/dist/
+!packages/plugins/sdk/dist/**
 ui/storybook-static/
 .env
 *.tsbuildinfo
