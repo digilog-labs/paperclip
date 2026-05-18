@@ -9,9 +9,7 @@ RUN apt-get update \
 WORKDIR /app
 COPY . .
 RUN pnpm install --frozen-lockfile \
-  && pnpm --filter @paperclipai/ui build \
-  && pnpm --filter @paperclipai/plugin-sdk build \
-  && pnpm --filter @paperclipai/server build
+  && pnpm run build:cloudtype
 ENV NODE_ENV=production HOST=0.0.0.0 PORT=3100 SERVE_UI=true \
   PAPERCLIP_HOME=/paperclip PAPERCLIP_INSTANCE_ID=default
 EXPOSE 3100

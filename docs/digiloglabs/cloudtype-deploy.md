@@ -45,6 +45,18 @@ mkdir -p patches && curl -fsSL -o patches/embedded-postgres@18.1.0-beta.16.patch
 
 ---
 
+## `tsx` / preflight 빌드 오류
+
+```text
+Cannot find module '/app/cli/node_modules/tsx/dist/cli.mjs'
+```
+
+Node 자동 빌드가 **lockfile만으로 install → 전체 COPY → build** 순서라 workspace `node_modules`가 비어 있을 수 있습니다.
+
+`master`의 `pnpm run build`는 `scripts/ci-build.mjs`가 이를 감지해 **재 install 후 `build:cloudtype`**(ui + plugin-sdk + server)만 실행합니다. 최신 `master`로 재배포하면 됩니다.
+
+---
+
 ## 런타임 환경 변수
 
 ```env
