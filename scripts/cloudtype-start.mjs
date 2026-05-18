@@ -21,6 +21,32 @@ function run(command, env = process.env) {
   execSync(command, { stdio: "inherit", env });
 }
 
+function validateCloudtypeEnv(env) {
+  const host = (env.HOST ?? "127.0.0.1").trim();
+  const bind = env.PAPERCLIP_BIND?.trim();
+  const mode = (env.PAPERCLIP_DEPLOYMENT_MODE ?? "local_trusted").trim();
+  const publicBind =
+    host === "0.0.0.0" || host === "::" || bind === "lan";
+
+  if (publicBind && mode === "local_trusted") {
+    console.error(
+      "[cloudtype-start] HOST=0.0.0.0 cannot run with local_trusted (loopback only).\n" +
+        "  Set Cloudtype runtime env:\n" +
+        "    PAPERCLIP_DEPLOYMENT_MODE=authenticated\n" +
+        "    PAPERCLIP_DEPLOYMENT_EXPOSURE=private\n" +
+        "    PAPERCLIP_PUBLIC_URL=https://<your-cloudtype-host>\n" +
+        "  See docs/digiloglabs/cloudtype-deploy.md",
+    );
+    process.exit(1);
+  }
+
+  if (mode === "authenticated" && !env.PAPERCLIP_PUBLIC_URL?.trim()) {
+    console.warn(
+      "[cloudtype-start] PAPERCLIP_PUBLIC_URL is unset — set it to your Cloudtype HTTPS URL",
+    );
+  }
+}
+
 function logDatabaseTarget() {
   const url = process.env.DATABASE_URL?.trim();
   if (!url) {
@@ -62,6 +88,7 @@ if (!existsSync(entry) || !existsSync(ui)) {
 }
 
 logDatabaseTarget();
+validateCloudtypeEnv(process.env);
 
 if (!workspaceDepsInstalled()) {
   console.log(

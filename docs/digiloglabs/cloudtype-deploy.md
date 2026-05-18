@@ -50,37 +50,38 @@ git push origin master
 
 ### 런타임 env (필수)
 
-로그에 `Bind loopback (127.0.0.1)` 이면 **외부에서 접속 불가**입니다. 반드시:
+Cloudtype은 **반드시** 아래 전체 세트를 넣으세요. `HOST=0.0.0.0` 만 추가하면 실패합니다:
+
+```text
+local_trusted requires server.bind=loopback
+```
+
+`local_trusted`는 `127.0.0.1` 전용이라 공개 바인딩과 같이 쓸 수 없습니다.
 
 ```env
 HOST=0.0.0.0
 PORT=3100
 SERVE_UI=true
+PAPERCLIP_DEPLOYMENT_MODE=authenticated
+PAPERCLIP_DEPLOYMENT_EXPOSURE=private
+PAPERCLIP_PUBLIC_URL=https://xxxx.cloudtype.app
 DATABASE_URL=postgresql://...@...pooler.supabase.com:5432/postgres
-BETTER_AUTH_SECRET=<랜덤 32자 이상 32자>
+BETTER_AUTH_SECRET=<랜덤 32자 이상>
 ```
+
+`PAPERCLIP_PUBLIC_URL`은 Cloudtype이 준 **HTTPS URL 그대로** (끝에 `/` 없이).
 
 성공 시 기동 배너:
 
 ```text
+Mode             authenticated  |  ...
 Bind             all interfaces (0.0.0.0)
 Server           3100
-UI               http://0.0.0.0:3100/   (또는 static 경로)
 ```
 
-`UI disabled` → Cloudtype에 **`SERVE_UI=true`** 가 없음 (로컬 `.env`의 `false`를 그대로 쓰지 말 것).
+`UI disabled` → **`SERVE_UI=true`** 누락.
 
-### 공개 URL + 로그인 (권장)
-
-Cloudtype URL이 `https://xxxx.cloudtype.app` 이면:
-
-```env
-PAPERCLIP_DEPLOYMENT_MODE=authenticated
-PAPERCLIP_DEPLOYMENT_EXPOSURE=private
-PAPERCLIP_PUBLIC_URL=https://xxxx.cloudtype.app
-```
-
-첫 접속 후 `pnpm paperclipai onboard` 로 보드 사용자/초대 설정 (로컬에서 같은 DB를 쓰는 경우).
+첫 접속: 보드 로그인/초대는 `pnpm paperclipai onboard` (로컬 PC, 같은 `DATABASE_URL`).
 
 `npm start` → `cloudtype-start.mjs` → `server/dist` + `server/ui-dist` 확인 후 서버 기동 (서버에서 **빌드 안 함**).
 
