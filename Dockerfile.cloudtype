@@ -14,4 +14,4 @@ RUN NODE_ENV=development pnpm install --frozen-lockfile \
 ENV NODE_ENV=production HOST=0.0.0.0 PORT=3100 SERVE_UI=true \
   PAPERCLIP_HOME=/paperclip PAPERCLIP_INSTANCE_ID=default
 EXPOSE 3100
-CMD ["node", "--import", "./server/node_modules/tsx/dist/loader.mjs", "server/dist/index.js"]
+CMD ["node", "server/dist/index.js"]

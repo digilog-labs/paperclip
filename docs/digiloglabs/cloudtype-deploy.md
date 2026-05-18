@@ -136,8 +136,10 @@ npm start
 또는:
 
 ```bash
-node --import ./server/node_modules/tsx/dist/loader.mjs server/dist/index.js
+node server/dist/index.js
 ```
+
+(`tsx`는 devDependency라 프로덕션 이미지에 없음 — 컴파일된 `dist`만 실행)
 
 ---
 
