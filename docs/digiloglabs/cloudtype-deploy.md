@@ -102,14 +102,18 @@ DROP SCHEMA IF EXISTS drizzle CASCADE;
 pnpm db:migrate
 ```
 
-4. Cloudtype env 추가:
+4. Cloudtype `DATABASE_URL`을 로컬 `.env`와 **완전히 동일**하게 붙여넣기
+
+5. (선택) 저널이 이미 맞으면 아래는 생략 가능. 드리프트가 있었을 때만:
 
 ```env
 PAPERCLIP_MIGRATION_PROMPT=never
 PAPERCLIP_MIGRATION_AUTO_APPLY=false
 ```
 
-5. 재배포
+`never` + `false`는 **pending migration이 남아 있으면** 서버가 거부합니다. 로컬 `pnpm db:migrate` → `No pending migrations` 확인 후 설정하세요.
+
+6. 재배포 (`cloudtype-start`가 기동 전 `pnpm db:migrate` 실행)
 
 ### 빈 DB
 

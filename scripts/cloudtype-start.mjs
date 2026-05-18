@@ -59,6 +59,11 @@ if (!workspaceDepsInstalled()) {
   process.exit(1);
 }
 
+if (process.env.DATABASE_URL) {
+  console.log("[cloudtype-start] checking database migrations (pnpm db:migrate)...");
+  run("pnpm db:migrate", installEnv);
+}
+
 const tsxLoader = existsSync("node_modules/tsx/dist/loader.mjs")
   ? "./node_modules/tsx/dist/loader.mjs"
   : "./server/node_modules/tsx/dist/loader.mjs";
