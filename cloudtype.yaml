@@ -1,5 +1,4 @@
-# Cloudtype deploy config (used by `ctype apply` / GitHub Actions deploy action).
-# Dashboard-only Git deploy ignores this unless you import CLI settings or use Actions.
+# Optional: Cloudtype CLI (`ctype apply`) reference only. Dashboard Git deploy does not read this file.
 name: paperclip
 app: dockerfile
 options:

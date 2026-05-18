@@ -1,5 +1,4 @@
-# Cloudtype: use Dockerfile deploy (not Node auto dockerfile.build-*).
-# Dashboard: template "Dockerfile", path "Dockerfile.cloudtype", port 3100.
+# Optional CLI reference. Dashboard: Dockerfile template, path Dockerfile.cloudtype, port 3100.
 name: paperclip
 app: dockerfile
 options:

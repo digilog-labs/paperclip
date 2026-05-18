@@ -36,7 +36,7 @@ exit code: 1
 
 **여전히** 로그에 `cp ./.next/*` 가 보이면 Next 템플릿이 그대로인 것입니다. 코드 push만으로는 이 단계가 사라지지 않습니다.
 
-저장소 루트의 `cloudtype.yaml` / `.cloudtype/app.yaml` 은 **GitHub Actions + `ctype apply`** 배포 시 사용됩니다. 대시보드 Git 연동만 쓰면 UI에서 템플릿을 직접 바꿔야 합니다.
+배포는 **Cloudtype 대시보드** Git 연동 + `master` 브랜치 기준으로 진행합니다.
 
 ---
 
