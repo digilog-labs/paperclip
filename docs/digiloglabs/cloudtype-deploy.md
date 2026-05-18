@@ -24,6 +24,20 @@ exit code: 1
 
 설정 변경이 안 먹으면 서비스를 삭제하고 위 값으로 **새로 생성**하는 편이 빠릅니다.
 
+### 대시보드에서 바꾸는 방법 (요약)
+
+1. [Cloudtype](https://cloudtype.io) → 해당 **서비스** 클릭  
+2. **설정** (또는 톱니/빌드 설정)  
+3. **앱 종류 / 템플릿 / 프레임워크**가 `Next.js`이면 → **`Dockerfile`** 로 변경  
+4. **Dockerfile 경로**: `Dockerfile.cloudtype` (기본값 `Dockerfile`만 두지 말 것)  
+5. **루트 디렉토리**: 비움 또는 `/` (서브디렉터리 `ui` 등 X)  
+6. **브랜치**: `master`  
+7. 저장 후 **캐시 없이** 재배포  
+
+**여전히** 로그에 `cp ./.next/*` 가 보이면 Next 템플릿이 그대로인 것입니다. 코드 push만으로는 이 단계가 사라지지 않습니다.
+
+저장소 루트의 `cloudtype.yaml` / `.cloudtype/app.yaml` 은 **GitHub Actions + `ctype apply`** 배포 시 사용됩니다. 대시보드 Git 연동만 쓰면 UI에서 템플릿을 직접 바꿔야 합니다.
+
 ---
 
 ## Node 자동 빌드 (`dockerfile.build-*`)

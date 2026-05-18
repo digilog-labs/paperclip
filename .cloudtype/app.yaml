@@ -7,3 +7,5 @@ options:
   dockerfile: Dockerfile.cloudtype
 context:
   preset: dockerfile
+  git:
+    branch: master

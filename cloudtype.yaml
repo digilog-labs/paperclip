@@ -1,0 +1,11 @@
+# Cloudtype deploy config (used by `ctype apply` / GitHub Actions deploy action).
+# Dashboard-only Git deploy ignores this unless you import CLI settings or use Actions.
+name: paperclip
+app: dockerfile
+options:
+  ports: 3100
+  dockerfile: Dockerfile.cloudtype
+context:
+  preset: dockerfile
+  git:
+    branch: master
