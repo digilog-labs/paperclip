@@ -3,6 +3,7 @@ import { type, models, agentConfigurationDoc } from "../index.js";
 import { execute } from "./execute.js";
 import { testEnvironment } from "./test.js";
 import { listOllamaModels } from "./models.js";
+import { getConfigSchema } from "./config-schema.js";
 
 function readNonEmptyString(value: unknown): string | null {
   return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
@@ -28,6 +29,7 @@ export const sessionCodec: AdapterSessionCodec = {
 export { execute } from "./execute.js";
 export { testEnvironment } from "./test.js";
 export { listOllamaModels } from "./models.js";
+export { getConfigSchema } from "./config-schema.js";
 
 export function createServerAdapter(): ServerAdapterModule {
   return {
@@ -38,6 +40,7 @@ export function createServerAdapter(): ServerAdapterModule {
     models,
     listModels: listOllamaModels,
     agentConfigurationDoc,
+    getConfigSchema,
     supportsLocalAgentJwt: false,
     supportsInstructionsBundle: false,
     requiresMaterializedRuntimeSkills: false,

@@ -141,6 +141,7 @@ import {
   testEnvironment as ollamaTestEnvironment,
   sessionCodec as ollamaSessionCodec,
   listOllamaModels,
+  getConfigSchema as getOllamaConfigSchema,
 } from "@paperclipai/adapter-ollama-local/server";
 import {
   agentConfigurationDoc as ollamaAgentConfigurationDoc,
@@ -515,6 +516,7 @@ const ollamaLocalAdapter: ServerAdapterModule = {
   models: ollamaModels,
   listModels: listOllamaModels,
   agentConfigurationDoc: ollamaAgentConfigurationDoc,
+  getConfigSchema: getOllamaConfigSchema,
   supportsLocalAgentJwt: false,
   supportsInstructionsBundle: false,
   requiresMaterializedRuntimeSkills: false,
